@@ -8,8 +8,9 @@ try:
 
     sections = config.sections()
 
-    com_port = config.get(section='Encoder', option ='port_com')
-    boundrate = config.get(section='Encoder', option ='boundrate')
+    com_port = config.get(section='encoder', option ='port_com')
+    boundrate = config.getint(section='encoder', option ='boundrate')
+    stepper_motor_steps = config.getint(section='encoder', option = 'stepper_motor_steps')
 
 
 except  Exception as f:
