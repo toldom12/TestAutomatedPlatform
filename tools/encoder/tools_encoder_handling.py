@@ -4,7 +4,7 @@ from enum import StrEnum, IntEnum
 
 import serial
 
-from setup.configurator import stepper_motor_steps
+from setup.configurator import stepper_motor_steps, com_port, boundrate
 
 
 class Commands(IntEnum):

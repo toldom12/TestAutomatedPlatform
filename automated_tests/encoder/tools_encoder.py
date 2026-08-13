@@ -1,27 +1,34 @@
 from dataclasses import dataclass
-from enum import StrEnum, Enum
+from enum import StrEnum, Enum, IntEnum
 from typing import Optional
 
 from automated_tests.encoder.map import StartUp
 from tools.StepsVerifcator.steps_verifcator import TesStepsVerifcator
-from tools.encoder.tools_encoder_handling import EncoderHandling
+from tools.encoder.tools_encoder_handling import EncoderHandling, Commands
 
 
 @dataclass
 class EncoderInfo:
-    com_port : str
-    boundrate: int
-    stepper_motor_steps :int
+    com_port : str = 'COM9'
+    boundrate: int = 999999
+    stepper_motor_steps :int = 9999
     case: Optional[StrEnum] = None
+    valve_steps : int = 1000
+    cmd_encoder : Commands = Commands.ReadPosition
 
-
+class CaseEnocderRotateCheck(StrEnum):
+    NoRotate = 'NoRotate'
+    Rotate = 'Rotate'
 
 class CheckCommunicationEnocderCase(Enum):
     case_0 = EncoderInfo(com_port='COM3',
                          boundrate=115200,
                          stepper_motor_steps=200)
 
-
+class CheckRotateMeasurementEncoder(Enum):
+    case_0 = EncoderInfo(case = CaseEnocderRotateCheck.NoRotate,
+                         valve_steps= 999,
+                         cmd_encoder=Commands.ReadPosition)
 
 class EncoderPlatform:
     @staticmethod
@@ -49,3 +56,7 @@ class EncoderPlatform:
                                f'')
 
         return test
+    @staticmethod
+    def get_case_name(expected_data_encoder : EncoderInfo) -> StrEnum:
+        get_case_name = expected_data_encoder.case
+        return get_case_name
