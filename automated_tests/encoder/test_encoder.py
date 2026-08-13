@@ -10,6 +10,20 @@ from tools.StepsVerifcator.steps_verifcator import TesStepsVerifcator
        params.value for params in CheckCommunicationEnocderCase])
 def test_check_startup_params_encoder(module_data: StartUp,
                                      parameters_encoder : EncoderInfo):
+      '''
+      Test case (ID : 12345): Check encoder startup parameters .
+
+      Steps:
+      1. Create the encoder handler using the settings from setup/config.ini.
+      2. Load the expected encoder parameters from the test case data.
+      3. Verify that the configured COM port matches the expected COM port.
+      4. Verify that the configured baud rate matches the expected baud rate.
+      5. Verify that the configured number of stepper-motor steps per rotation
+         matches the expected value.
+
+      Expected result:
+      All configured encoder parameters match the expected test-case values.
+      '''
 
 
 
@@ -25,6 +39,21 @@ def test_check_startup_params_encoder(module_data: StartUp,
        params.value for params in CheckRotateMeasurementEncoder])
 def test_check_rotate_value_from_encoder(module_data: StartUp,
                                          parameters_encoder : EncoderInfo):
+    '''
+    Test case (ID : 54321): Check encoder position when the motor does not rotate.
+
+    Steps:
+    1. Read the test-case type and confirm that it is NoRotate.
+    2. Send the ReadPosition command to the encoder and calculate the valve
+       position as a percentage using the configured valve travel.
+    3. Do not command the stepper motor to move.
+    4. Send the ReadPosition command to the encoder a second time and calculate
+       the position percentage again.
+    5. Compare the first and second calculated position values.
+
+    Expected result:
+    Both measurements are equal because the stepper motor has not moved.
+    '''
 
     test = TesStepsVerifcator()
 
