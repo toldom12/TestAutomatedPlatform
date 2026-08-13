@@ -31,11 +31,15 @@ class TesStepsVerifcator:
         else:
             return False
 
-    def is_any_fail(self):
+    def is_any_fail(self) -> bool:
         count_expected = self.expected_results.count(True)
         count_received = self.received_results.count(True)
 
         return count_received != count_expected
+
+    #@TODO: cleanup lists
+    def cleanup(self):
+        pass
 
 if __name__ == '__main__':
     a = TesStepsVerifcator()
