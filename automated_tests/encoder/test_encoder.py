@@ -39,7 +39,7 @@ def test_check_startup_params_encoder(module_data: StartUp,
        params.value for params in CheckRotateMeasurementEncoder])
 def test_check_rotate_value_from_encoder(module_data: StartUp,
                                          parameters_encoder : EncoderInfo):
-    '''
+    """
     Test case (ID : 54321): Check encoder position when the motor does not rotate.
 
     Steps:
@@ -53,7 +53,7 @@ def test_check_rotate_value_from_encoder(module_data: StartUp,
 
     Expected result:
     Both measurements are equal because the stepper motor has not moved.
-    '''
+    """
 
     test = TesStepsVerifcator()
 
