@@ -1,6 +1,8 @@
-# Automated Tests Encoder Controller
+# Automated Embedded Test Devices Platform
 
-Python automated tests for an encoder connected through a serial COM port.
+A Python platform for automating tests of embedded devices. It provides reusable tooling and test suites for communicating with hardware through interfaces such as serial COM ports.
+
+The platform supports multiple device kinds. An **encoder controller** is the first supported device kind; additional embedded devices can be added with their own tooling and test suites.
 
 ## Encoder test cases
 
