@@ -1,0 +1,38 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Run Current File (venv)",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "envFile": "${workspaceFolder}/.env",
+      "python": "${command:python.interpreterPath}"
+    },
+    {
+      "name": "Python: Pytest (workspace)",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "args": [
+        "${workspaceFolder}/automated_tests"
+      ],
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "envFile": "${workspaceFolder}/.env",
+      "python": "${command:python.interpreterPath}"
+    },
+    {
+      "name": "Manual: encoder_manual.py",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/manual_tests/encoder_manual.py",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "envFile": "${workspaceFolder}/.env",
+      "python": "${command:python.interpreterPath}"
+    }
+  ]
+}
