@@ -1,6 +1,8 @@
+import time
 from enum import StrEnum
 from time import sleep
 
+from automated_tests.arduino.tools_arduino import ArduinoCommand
 from setup import configurator
 import subprocess
 
@@ -14,11 +16,12 @@ class Arduino:
                  com_port: int = configurator.arduino_nano_com_port,
                  name_board: StrEnum = ArduinoType.ArduinoNano,
                  boundrate : int = configurator.arduino_nano_boudrate,
-                 ):
+                 arduino = None):
         self.name_board = name_board
         self.com_port = com_port
         self.boudrate = boundrate
         self.arduino_cli_path = arduino_cli_path
+        self.arduino = arduino
 
 
     def flash_device(self,
@@ -69,10 +72,37 @@ class Arduino:
             except Exception as f:
                 print(f'[{ArduinoType.ArduinoNano}][ERROR]: {f}')
         return None
+
+    def send_frame(self,
+                     command: ArduinoCommand = ArduinoCommand.STATUS):
+        import serial
+
+        self.arduino = serial.Serial(port = str(self.com_port),
+                                    baudrate=self.boudrate,
+                                     timeout=3)
+        time.sleep(2)
+        # self.arduino.close()
+        # self.arduino.open()
+        self.arduino.reset_input_buffer()
+
+        cmd = f'{command.value}\n'.encode("ascii")
+        self.arduino.write(cmd)
+        self.arduino.flush()
+
+    def receive_frame(self):
+        read  = self.arduino.readline().decode("utf-8", errors = "replace").strip()
+        return read
+
+
 if __name__ =='__main__':
     a = Arduino()
     c = a.erase_device()
     z = a.flash_device()
+    a.send_frame()
+    a.receive_frame()
+    a.arduino.close()
+    pass
+
     pass
     pass
 
