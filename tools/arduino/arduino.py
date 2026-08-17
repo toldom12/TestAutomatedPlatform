@@ -13,37 +13,57 @@ class Arduino:
                  com_port: int = configurator.arduino_nano_com_port,
                  name_board: StrEnum = ArduinoType.ArduinoNano,
                  boundrate : int = configurator.arduino_nano_boudrate,
-                 file_path: str = configurator.arduino_nano_load_file
                  ):
         self.name_board = name_board
         self.com_port = com_port
         self.boudrate = boundrate
-        self.file_path = file_path
         self.arduino_cli_path = arduino_cli_path
 
 
-    def flash_device(self):
+    def flash_device(self,
+                     flash_path: str = configurator.arduino_nano_flash_path):
         if self.name_board == ArduinoType.ArduinoNano:
-            output = subprocess.run([self.arduino_cli_path, "compile",
-                                     "--fqbn", "arduino:avr:nano:cpu=atmega328old",
-                                     "--upload",
-                                     "--port", self.com_port,
-                                     self.file_path
+            try:
+                output = subprocess.run([self.arduino_cli_path, "compile",
+                                         "--fqbn", "arduino:avr:nano:cpu=atmega328old",
+                                         "--upload",
+                                         "--port", self.com_port,
+                                         flash_path
+                ],
+                check=True,
+                text=True,
+                capture_output=True,
+                encoding='utf-8')
 
-            ],
-            check=True,
-            text=True,
-            capture_output=True,
-            encoding='utf-8')
-
-            return output
+                return output
+            except Exception as f:
+                print(f'[{ArduinoType.ArduinoNano}][ERROR]: {f}')
         return None
 
-
+    def erase_device(self,
+                     erase_path: str = configurator.arduino_nano_erase):
+        if self.name_board == ArduinoType.ArduinoNano:
+            try:
+                output = subprocess.run([self.arduino_cli_path, "compile",
+                                         "--fqbn", "arduino:avr:nano:cpu=atmega328old",
+                                         "--upload",
+                                         "--port", self.com_port,
+                                         erase_path],
+                                        check=True,
+                                        text=True,
+                                        capture_output=True,
+                                        encoding='utf-8')
+                return output
+            except Exception as f:
+                print(f'[{ArduinoType.ArduinoNano}][ERROR]: {f}')
+        return None
 if __name__ =='__main__':
     a = Arduino()
+    c = a.erase_device()
     z = a.flash_device()
     pass
+    pass
+
 
 
 
