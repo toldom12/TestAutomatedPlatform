@@ -11,6 +11,12 @@ def extract_prefix(parameters: list[str]) -> list:
     return clean_parameters
 
 
+class TestType(StrEnum):
+    Selftest = "selftest"
+    SystemTest = "systemtest"
+    IntegrationTest = "integration_test"
+    WithoutTest = "no_test"
+
 class FlashingDevice(StrEnum):
     ArduinoNano = "arduino_nano"
     JLink  = "jlink"
@@ -21,6 +27,7 @@ class FlashingType(StrEnum):
 
 @dataclass
 class FlashObjects:
-    device_type : FlashingDevice = FlashingDevice.ArduinoNano
-    flash_type : FlashingType = FlashingType.Flash
+    device_type : FlashingDevice
+    flash_type : FlashingType
+    test_type : TestType
 

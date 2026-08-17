@@ -15,7 +15,9 @@ parameters = extract_prefix(parameters = parameters)
 print(parameters)
 
 create_flash_obj :FlashObjects = FlashObjects(device_type=parameters[0],
-                                              flash_type= parameters[1])
+                                              flash_type= parameters[1],
+                                              test_type=parameters[2]
+                                              )
 
 if create_flash_obj.device_type in FlashingDevice.ArduinoNano:
     A = Arduino()
