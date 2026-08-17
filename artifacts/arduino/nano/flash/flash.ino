@@ -24,6 +24,11 @@ void loop()
             {
                 Serial.println("24.5");
             }
+             else if (strcmp(command, "SELFTEST") == 0)
+            {
+                Serial.println("SELFTEST_PASSED");
+            }
+
             else
             {
                 Serial.println("ERROR: unknown command");

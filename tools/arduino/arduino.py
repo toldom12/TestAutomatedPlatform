@@ -1,4 +1,5 @@
 from enum import StrEnum
+from time import sleep
 
 from setup import configurator
 import subprocess
@@ -21,9 +22,13 @@ class Arduino:
 
 
     def flash_device(self,
-                     flash_path: str = configurator.arduino_nano_flash_path):
+                     flash_path: str = configurator.arduino_nano_flash_path,
+                     wait_before: float = 1,
+                     wait_after: float = 1,
+                     ):
         if self.name_board == ArduinoType.ArduinoNano:
             try:
+                sleep(wait_before)
                 output = subprocess.run([self.arduino_cli_path, "compile",
                                          "--fqbn", "arduino:avr:nano:cpu=atmega328old",
                                          "--upload",
@@ -35,15 +40,21 @@ class Arduino:
                 capture_output=True,
                 encoding='utf-8')
 
+                sleep(wait_after)
+
                 return output
             except Exception as f:
                 print(f'[{ArduinoType.ArduinoNano}][ERROR]: {f}')
         return None
 
     def erase_device(self,
-                     erase_path: str = configurator.arduino_nano_erase):
+                     erase_path: str = configurator.arduino_nano_erase,
+                     wait_before: float = 1,
+                     wait_after: float = 1,
+                     ):
         if self.name_board == ArduinoType.ArduinoNano:
             try:
+                sleep(wait_before)
                 output = subprocess.run([self.arduino_cli_path, "compile",
                                          "--fqbn", "arduino:avr:nano:cpu=atmega328old",
                                          "--upload",
@@ -53,6 +64,7 @@ class Arduino:
                                         text=True,
                                         capture_output=True,
                                         encoding='utf-8')
+                sleep(wait_after)
                 return output
             except Exception as f:
                 print(f'[{ArduinoType.ArduinoNano}][ERROR]: {f}')
