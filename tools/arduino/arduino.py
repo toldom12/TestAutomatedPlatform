@@ -2,6 +2,8 @@ import time
 from enum import StrEnum
 from time import sleep
 
+import serial
+
 from automated_tests.arduino.tools_arduino import ArduinoCommand
 from setup import configurator
 import subprocess
@@ -22,7 +24,12 @@ class Arduino:
         self.boudrate = boundrate
         self.arduino_cli_path = arduino_cli_path
         self.arduino = arduino
-
+        self.arduino = serial.Serial(port=str(self.com_port),
+                                     baudrate=self.boudrate,
+                                     timeout=3)
+        self.arduino.close()
+        self.arduino.open()
+        time.sleep(3)
 
     def flash_device(self,
                      flash_path: str = configurator.arduino_nano_flash_path,
@@ -31,6 +38,7 @@ class Arduino:
                      ):
         if self.name_board == ArduinoType.ArduinoNano:
             try:
+                self.arduino.close()
                 sleep(wait_before)
                 output = subprocess.run([self.arduino_cli_path, "compile",
                                          "--fqbn", "arduino:avr:nano:cpu=atmega328old",
@@ -48,6 +56,10 @@ class Arduino:
                 return output
             except Exception as f:
                 print(f'[{ArduinoType.ArduinoNano}][ERROR]: {f}')
+            finally:
+                if not self.arduino.is_open:
+                    self.arduino.open()
+                time.sleep(wait_after)
         return None
 
     def erase_device(self,
@@ -57,6 +69,7 @@ class Arduino:
                      ):
         if self.name_board == ArduinoType.ArduinoNano:
             try:
+                self.arduino.close()
                 sleep(wait_before)
                 output = subprocess.run([self.arduino_cli_path, "compile",
                                          "--fqbn", "arduino:avr:nano:cpu=atmega328old",
@@ -71,16 +84,16 @@ class Arduino:
                 return output
             except Exception as f:
                 print(f'[{ArduinoType.ArduinoNano}][ERROR]: {f}')
+            finally:
+                if not self.arduino.is_open:
+                    self.arduino.open()
+                time.sleep(wait_after)
         return None
 
     def send_frame(self,
                      command: ArduinoCommand = ArduinoCommand.STATUS):
-        import serial
 
-        self.arduino = serial.Serial(port = str(self.com_port),
-                                    baudrate=self.boudrate,
-                                     timeout=3)
-        time.sleep(2)
+        time.sleep(3)
         # self.arduino.close()
         # self.arduino.open()
         self.arduino.reset_input_buffer()
@@ -89,10 +102,28 @@ class Arduino:
         self.arduino.write(cmd)
         self.arduino.flush()
 
-    def receive_frame(self):
-        read  = self.arduino.readline().decode("utf-8", errors = "replace").strip()
-        return read
 
+    def receive_frame(self,
+                      sended_command: ArduinoCommand = ArduinoCommand.STATUS ):
+        read_list : list[str] = []
+        for i in range(len(sended_command)):
+            read  = self.arduino.readline().decode("utf-8", errors = "replace").strip()
+            if not read:
+                break
+            if read.isdigit():
+                letter = chr(int(read))
+                read_list.append(letter)
+            else:
+                read_list.append(read)
+
+        txt = ''.join(read_list)
+        return txt
+
+    def close(self):
+        self.arduino.close()
+
+    def open(self):
+        self.arduino.open()
 
 if __name__ =='__main__':
     a = Arduino()

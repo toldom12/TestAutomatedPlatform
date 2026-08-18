@@ -5,9 +5,9 @@ import pytest
 from automated_tests.arduino.map import StartUp
 from tools.arduino.arduino import Arduino
 
-is_flash_is_needed : bool = False
+is_flash_is_needed : bool = True
 
-@pytest.mark(autouse = True, scope = 'module')
+@pytest.fixture(autouse = True, scope = 'module')
 def module_data() -> Generator[StartUp, Any, None]:
     arduino = Arduino()
     init: StartUp = StartUp(arduino_nano = arduino)

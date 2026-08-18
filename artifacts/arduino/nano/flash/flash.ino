@@ -41,8 +41,7 @@ void loop()
             if (commandIndex < sizeof(command) - 1)
             {
                 command[commandIndex] = receivedCharacter;
-                int a = command[commandIndex];
-                Serial.println(a);
+
                 commandIndex++;
             }
         }
