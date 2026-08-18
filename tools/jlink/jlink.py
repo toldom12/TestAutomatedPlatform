@@ -1,32 +1,39 @@
 
-from setup.configurator import board_1, jlink_path
 import subprocess
+from dataclasses import dataclass, field
 
-tmp = 'STM32F407VG'
+from setup import configurator
+
+
+
 
 
 class Jlink:
-    def __init__(self,
-                 serial_number: int = board_1,
-                 jlink_path: str = jlink_path):
-
-        self.serial_number = serial_number
-        self.jlink_path = jlink_path
-
-    def connect_jlink(self):
-        output = subprocess.run([
-            f"{self.jlink_path}",
-            "-SelectEmuBySN", str(self.serial_number),
-            "-Device", tmp,
-            "-If", "SWD",
-            "-Speed", "4000",
+    jlink_path = configurator.jlink_path
+    @staticmethod
+    def flash(jlink_path: str,
+              processor: str,
+              jlink_sn: int,
+              firmware_path: str):
+        command = [
+            jlink_path,
+            "-SelectEmuBySn", str(jlink_sn),
+            "-Device", processor,
+            "-If", "SWD"
+            "-Speed", "4000"
             "-AutoConnect", "1",
-        ])
+            "-ExitOnError", "1"
+            "-CommandFile", rf"{firmware_path}",
+        ]
 
+        output = subprocess.run(
+            command,
+            text=True,
+            capture_output=True,
+            check=True,
+        )
 
 
 if __name__ == '__main__':
-    a = Jlink()
-    a.connect_jlink()
     pass
 
