@@ -25,8 +25,6 @@ def test_check_startup_params_encoder(module_data: StartUp,
       All configured encoder parameters match the expected test-case values.
       '''
 
-
-
       test = TesStepsVerifcator()
 
       EncoderPlatform.check_encoder_connection(encoder_init_params=module_data.encoder,

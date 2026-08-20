@@ -1,32 +1,133 @@
 
-from setup.configurator import board_1, jlink_path
 import subprocess
+from pathlib import Path
 
-tmp = 'STM32F407VG'
+from setup import configurator
+
+DIR_PATH = Path(__file__).resolve().parent / 'tmp_files'
+RTT_LOGS_PATH = Path(__file__).resolve().parent / 'logs'/'rtt'
 
 
+def build_command_jlink(parameters_list : list,
+                        path_to_jlink_file: str = DIR_PATH / 'tmp.jlink')-> str:
+    DIR_PATH.mkdir(parents=True, exist_ok=True)
+    with open(path_to_jlink_file,'w') as f:
+        for param in parameters_list:
+            f.write(param + '\n')
+
+    return str(path_to_jlink_file)
+
+
+#@TODO : add PID handling
+#@TODO: reset  microporcessor
 class Jlink:
-    def __init__(self,
-                 serial_number: int = board_1,
-                 jlink_path: str = jlink_path):
 
-        self.serial_number = serial_number
-        self.jlink_path = jlink_path
+    jlink_path = configurator.jlink_path
+    rtt_viewer_path = configurator.rtt_viewer_path
 
-    def connect_jlink(self):
-        output = subprocess.run([
-            f"{self.jlink_path}",
-            "-SelectEmuBySN", str(self.serial_number),
-            "-Device", tmp,
+    @staticmethod
+    def flash(
+              processor: str,
+              jlink_sn: int,
+              hex_file: str):
+
+        output = None
+        jlink_command_file = build_command_jlink(parameters_list=[
+            'connect',
+            'erase',
+             f'loadfile {hex_file}',
+             'r',
+             'q'])
+
+        command = [
+            Jlink.jlink_path,
+            "-SelectEmuBySn", str(jlink_sn),
+            "-Device", processor,
             "-If", "SWD",
             "-Speed", "4000",
             "-AutoConnect", "1",
+            "-ExitOnError", "1",
+            "-CommandFile", rf"{jlink_command_file}",
+        ]
+
+        try:
+
+            output = subprocess.run(
+                command,
+                text=True,
+                capture_output=True,
+                check=True,
+            )
+        except subprocess.CalledProcessError as error:
+            print(f'[ERROR][JFlash]: flash {error},'
+                  f'output: {error.stdout}\n{error.stderr}')
+
+    @staticmethod
+    def erase(processor: str,
+              jlink_sn: int):
+
+        output = None
+        jlink_command_file = build_command_jlink(parameters_list=[
+            'connect',
+            'h',
+            'erase',
+            'exit'
         ])
 
+        command = [
+            Jlink.jlink_path,
+            "-SelectEmuBySn", str(jlink_sn),
+            "-Device", processor,
+            "-If", "SWD",
+            "-Speed", "4000",
+            "-AutoConnect", "1",
+            "-ExitOnError", "1",
+            "-CommandFile", rf"{jlink_command_file}",
+        ]
 
+        try:
+            output = subprocess.run(
+                command,
+                text=True,
+                capture_output=True,
+                check=True,
+            )
+        except subprocess.CalledProcessError as error:
+            print(f'[ERROR][JFlash] erase: {error},'
+                  f'output: {error.stdout}\n{error.stderr}')
+
+    @staticmethod
+    def run_rtt_logger(processor: str, jlink_sn: int, rtt_address: str):
+        RTT_LOGS_PATH.mkdir(parents=True, exist_ok=True)
+        log_path = RTT_LOGS_PATH / "log.txt"
+
+        command = [
+            Jlink.rtt_viewer_path,  # configured Logger path
+            "-Device", processor,
+            "-If", "SWD",
+            "-Speed", "4000",
+            "-USB", str(jlink_sn),
+            "-RTTAddress", str(rtt_address),
+            "-RTTChannel", "0",
+            str(log_path),  # final positional argument
+        ]
+
+        process = subprocess.Popen(
+            command,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            text=True,
+        )
 
 if __name__ == '__main__':
-    a = Jlink()
-    a.connect_jlink()
-    pass
+   # Jlink.erase(processor=configurator.board_1_uc,
+   #             jlink_sn=configurator.board_1_sn)
+   Jlink.run_rtt_logger(processor=configurator.board_1_uc,
+                        jlink_sn = configurator.board_1_sn,
+                        rtt_address=configurator.board_1_address)
+
+   pass
+
+
+
 
