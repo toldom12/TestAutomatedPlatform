@@ -96,51 +96,38 @@ class Jlink:
             print(f'[ERROR][JFlash] erase: {error},'
                   f'output: {error.stdout}\n{error.stderr}')
 
-
     @staticmethod
-    def run_rtt_viewer(processor: str,
-                       jlink_sn: int,
-                       rtt_adress: int):
+    def run_rtt_logger(processor: str, jlink_sn: int, rtt_address: str):
         RTT_LOGS_PATH.mkdir(parents=True, exist_ok=True)
+        log_path = RTT_LOGS_PATH / "log.txt"
 
-        rtt_logs_path = RTT_LOGS_PATH / 'log.txt'
+        command = [
+            Jlink.rtt_viewer_path,  # configured Logger path
+            "-Device", processor,
+            "-If", "SWD",
+            "-Speed", "4000",
+            "-USB", str(jlink_sn),
+            "-RTTAddress", str(rtt_address),
+            "-RTTChannel", "0",
+            str(log_path),  # final positional argument
+        ]
 
-        jlink_command_file = build_command_jlink(parameters_list=[
-            'connect',
-            f'rtt start {rtt_adress}',
-        ])
-
-        process = subprocess.Popen([
-            Jlink.jlink_path,
-            '-SelectEmuBySn', str(jlink_sn),
-            '-Device', processor,
-            '-If', 'SWD',
-            '-Speed', '4000',
-            '-AutoConnect', '1',
-            '-CommanderScript', jlink_command_file,
-        ], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-
-
-        try:
-            with rtt_logs_path.open('w', encoding='utf-8') as log:
-                while process.poll() is None:
-                    line = process.stdout.readline()
-                    if line:
-                        log.write(line)
-                        print(line.strip())
-        except KeyboardInterrupt:
-            process.terminate()
-            process.wait()
-
-
-
-
+        process = subprocess.Popen(
+            command,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            text=True,
+        )
 
 if __name__ == '__main__':
    # Jlink.erase(processor=configurator.board_1_uc,
    #             jlink_sn=configurator.board_1_sn)
-   Jlink.run_rtt_viewer(processor=configurator.board_1_uc,
+   Jlink.run_rtt_logger(processor=configurator.board_1_uc,
                         jlink_sn = configurator.board_1_sn,
-                        rtt_adress=configurator.board_1_address)
+                        rtt_address=configurator.board_1_address)
+
+   pass
+
+
 
 
