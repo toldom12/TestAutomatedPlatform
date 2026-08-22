@@ -1,2 +1,5 @@
 tools/encoder/doc/amt21.pdf
 tools/encoder/doc
+__pycache__/
+*.py[cod]
+.venv/

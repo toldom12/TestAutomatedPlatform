@@ -1,23 +1,47 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        
-        {
-            "name": "Debug pytest",
-            "type": "python",
-            "request": "launch",
-            "module": "pytest",
-            "args": [
-                "automated_tests",
-                "-v",
-                "-s"
-            ],
-            "cwd": "${workspaceFolder}",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}"
-            }
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug encoder_manual (module)",
+      "type": "python",
+      "request": "launch",
+      "module": "manual_tests.encoder_manual",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "SERIAL_PORT": "/dev/ttyUSB0"
+      },
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Debug pytest",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["automated_tests", "-v", "-s"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": { "PYTHONPATH": "${workspaceFolder}" }
+    },
+    {
+      "name": "Debug module (prompt)",
+      "type": "python",
+      "request": "launch",
+      "module": "${input:moduleName}",
+      "cwd": "${workspaceFolder}",
+      "env": { "PYTHONPATH": "${workspaceFolder}" },
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ],
+  "inputs": [
+    {
+      "id": "moduleName",
+      "type": "promptString",
+      "description": "Module name (e.g. manual_tests.encoder_manual)",
+      "default": "manual_tests.encoder_manual"
+    }
+  ]
 }

@@ -3,6 +3,7 @@
 
     "python.testing.pytestEnabled": true,
     "python.testing.unittestEnabled": false,
+    "github.copilot.inlineSuggest.enable": false,
 
     "python.testing.pytestArgs": [
         "automated_tests"
