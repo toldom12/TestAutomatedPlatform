@@ -43,32 +43,44 @@ class TesStepsVerifcator:
         return count_received != count_expected
 
     def cleanup(self):
-        if len(sel.received_results) != len(self.expected_results):
-            for index, value_expected_results in enumerate(self.expected_results):
-                if value_expected_results == self.received_results[index]:
-                    self.expected_results.pop(index)
-                    self.received_results.pop(index)
+        copy_expected_results = []
+        copy_received_results = []
+        if not (len(self.received_results) != len(self.expected_results)):
+            for index, (received, expected) in enumerate(zip(self.expected_results, self.received_results)):
+                if received == expected: 
+                   pass
                 else: 
-                    pass
+                    copy_expected_results.append(self.received_results[index])
+                    copy_received_results.append(self.expected_results[index])
+            
+            self.expected_results = copy_expected_results
+            self.received_results = copy_received_results
+            
         else:
             raise StepsVerifcatorNotResponsibleLength(f'not correctly length,received {self.received_results}, expected: {self.expected_results}')
     
 
 if __name__ == '__main__':
     a = TesStepsVerifcator()
-    a.add_test(condition=True,
+    a.add_test(condition=False,
                fail_msg='XYZ')
 
     a.add_test(condition=True,
                fail_msg='XYZ1')
 
-    a.add_test(condition=True,
+    a.add_test(condition=False,
                fail_msg='XYZ1')
     
     a.add_test(condition=True,
                fail_msg='XYZ1')
+    
+    print(a.expected_results)
+    print(a.received_results)
 
     a.cleanup()
+
+    print(a.expected_results)
+    print(a.received_results)
 
     pass 
 
