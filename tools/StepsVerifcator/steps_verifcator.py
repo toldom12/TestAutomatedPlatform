@@ -1,6 +1,11 @@
 from typing import Optional
 
 
+class StepsVerifcatorNotResponsibleLength(Exception):
+    pass   
+
+
+
 class TesStepsVerifcator:
     def __init__(self,
                  expected_results=None,
@@ -37,20 +42,39 @@ class TesStepsVerifcator:
 
         return count_received != count_expected
 
-    #@TODO: cleanup lists
     def cleanup(self):
-        pass
+        if len(sel.received_results) != len(self.expected_results):
+            for index, value_expected_results in enumerate(self.expected_results):
+                if value_expected_results == self.received_results[index]:
+                    self.expected_results.pop(index)
+                    self.received_results.pop(index)
+                else: 
+                    pass
+        else:
+            raise StepsVerifcatorNotResponsibleLength(f'not correctly length,received {self.received_results}, expected: {self.expected_results}')
+    
 
 if __name__ == '__main__':
     a = TesStepsVerifcator()
-    a.add_test(condition=False,
+    a.add_test(condition=True,
                fail_msg='XYZ')
 
     a.add_test(condition=True,
                fail_msg='XYZ1')
 
+    a.add_test(condition=True,
+               fail_msg='XYZ1')
+    
+    a.add_test(condition=True,
+               fail_msg='XYZ1')
+
+    a.cleanup()
+
+    pass 
+
     info = a.is_last_result_failed()
     info2_  = a.is_any_fail()
+    print(info2_)
 
     pass
 
